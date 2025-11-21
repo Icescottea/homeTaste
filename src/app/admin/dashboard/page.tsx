@@ -15,7 +15,7 @@ export default function DashboardPage() {
     },
     {
       title: 'Total Orders',
-      value: '1,234',
+      value: '6,789',
       icon: ShoppingCart,
       change: '+23%',
       changeType: 'positive',
