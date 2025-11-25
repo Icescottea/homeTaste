@@ -1,49 +1,39 @@
+// src/app/home.tsx
 'use client';
 
-import React, { useState } from 'react';
-import { ShoppingCart, User, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ShoppingCart, User, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const HomePage = () => {
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  stock: number;
+}
+
+export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const products = [
-    {
-      id: 1,
-      name: "Turmeric Powder",
-      price: 12.99,
-      image: "/img/turmericPowder.png",
-      rating: 4.8
-    },
-    {
-      id: 2,
-      name: "Curry Powder",
-      price: 9.99,
-      image: "/img/curryPowder.png",
-      rating: 4.9
-    },
-    {
-      id: 3,
-      name: "Chilli Powder",
-      price: 14.99,
-      image: "/img/chilliPowder.png",
-      rating: 4.7
-    },
-    {
-      id: 4,
-      name: "Chilli Flakes",
-      price: 8.99,
-      image: "/img/chilliFlakes.png",
-      rating: 4.6
-    },
-    {
-      id: 5,
-      name: "Black Pepper",
-      price: 11.99,
-      image: "/img/blackPepper.png",
-      rating: 4.8
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch('/api/products');
+      const data = await res.json();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % products.length);
@@ -54,12 +44,21 @@ const HomePage = () => {
   };
 
   const getVisibleProducts = () => {
+    if (products.length === 0) return [];
     const visible = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < Math.min(3, products.length); i++) {
       visible.push(products[(currentSlide + i) % products.length]);
     }
     return visible;
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -124,60 +123,56 @@ const HomePage = () => {
             <p className="text-xl text-gray-600">Our most popular spices, loved by home chefs</p>
           </div>
 
-          <div className="relative">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {getVisibleProducts().map((product) => (
-                <div
-                  key={product.id}
-                  className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div className="relative h-64 overflow-hidden">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-center mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-4 h-4 ${
-                            i < Math.floor(product.rating)
-                              ? 'fill-orange-500 text-orange-500'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
-                      <span className="ml-2 text-sm text-gray-600">{product.rating}</span>
+          {products.length > 0 ? (
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {getVisibleProducts().map((product) => (
+                  <div
+                    key={product.id}
+                    className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                  >
+                    <div className="relative h-64 overflow-hidden">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
+                      />
                     </div>
-                    <h4 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h4>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-orange-600">${product.price}</span>
-                      <button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                        Add to Cart
-                      </button>
+                    <div className="p-6">
+                      <h4 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h4>
+                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-bold text-orange-600">${product.price.toFixed(2)}</span>
+                        <button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                          Add to Cart
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            {/* Carousel Controls */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white hover:bg-orange-50 p-3 rounded-full shadow-lg transition-colors"
-            >
-              <ChevronLeft className="w-6 h-6 text-orange-600" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white hover:bg-orange-50 p-3 rounded-full shadow-lg transition-colors"
-            >
-              <ChevronRight className="w-6 h-6 text-orange-600" />
-            </button>
-          </div>
+              {/* Carousel Controls */}
+              {products.length > 3 && (
+                <>
+                  <button
+                    onClick={prevSlide}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white hover:bg-orange-50 p-3 rounded-full shadow-lg transition-colors"
+                  >
+                    <ChevronLeft className="w-6 h-6 text-orange-600" />
+                  </button>
+                  <button
+                    onClick={nextSlide}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white hover:bg-orange-50 p-3 rounded-full shadow-lg transition-colors"
+                  >
+                    <ChevronRight className="w-6 h-6 text-orange-600" />
+                  </button>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="text-center text-gray-600">No products available</div>
+          )}
         </div>
       </section>
 
@@ -269,6 +264,4 @@ const HomePage = () => {
       </footer>
     </div>
   );
-};
-
-export default HomePage;
+}

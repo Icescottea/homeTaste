@@ -1,26 +1,56 @@
 // prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  
+  await prisma.product.deleteMany({});
 
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@hometaste.com' },
-    update: {},
-    create: {
-      name: 'Admin',
-      email: 'admin@hometaste.com',
-      password: hashedPassword,
-      role: 'ADMIN',
-      address: 'Head Office',
-      contact: '+1234567890',
+  const products = [
+    {
+      name: 'Turmeric Powder',
+      description: 'Premium quality organic turmeric powder sourced from the finest farms. Rich in curcumin with anti-inflammatory properties.',
+      price: 12.99,
+      image: '/img/turmericPowder.png',
+      stock: 45,
     },
-  });
+    {
+      name: 'Chilli Powder',
+      description: 'Vibrant red Kashmiri chili powder adds color and mild heat to your dishes. Perfect for Indian cuisine.',
+      price: 9.99,
+      image: '/img/chilliPowder.png',
+      stock: 38,
+    },
+    {
+      name: 'Curry Powder',
+      description: 'Traditional Indian spice blend with cinnamon, cardamom, cloves, and more. Aromatic and flavorful.',
+      price: 14.99,
+      image: '/img/curryPowder.png',
+      stock: 32,
+    },
+    {
+      name: 'Chilli Flakes',
+      description: 'Whole cumin seeds with earthy, nutty flavor. Essential for tempering and seasoning.',
+      price: 8.99,
+      image: '/img/chilliFlakes.png',
+      stock: 28,
+    },
+    {
+      name: 'Black Pepper',
+      description: 'Premium whole black peppercorns. Freshly ground for maximum flavor and aroma.',
+      price: 11.99,
+      image: '/img/blackPepper.png',
+      stock: 52,
+    },
+  ];
 
-  console.log('Admin user created:', admin);
+  await prisma.product.createMany({
+    data: products,
+    skipDuplicates: true,
+  });
+  
+  console.log('Products seeded successfully');
 }
 
 main()
