@@ -157,7 +157,7 @@ export default function InventoryPage() {
                         {product.stock} units
                       </span>
                     </td>
-                    <td className="py-4 px-4 font-medium">${product.price.toFixed(2)}</td>
+                    <td className="py-4 px-4 font-medium">₤{product.price.toFixed(2)}</td>
                     <td className="py-4 px-4">
                       <div className="flex justify-end gap-2">
                         <Button

@@ -3,7 +3,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ShoppingCart, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, User, ChevronLeft, ChevronRight, Car } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import CartSidebar from '@/components/CartSidebar';
+import UserDropdown from '@/components/UserDropdown';
 
 interface Product {
   id: string;
@@ -18,6 +21,7 @@ export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const { cartCount, setIsCartOpen, addToCart } = useCart();
 
   useEffect(() => {
     fetchProducts();
@@ -33,6 +37,10 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAddToCart = (product: Product) => {
+    addToCart(product.id, product.name, product.price, product.image, product.stock);
   };
 
   const nextSlide = () => {
@@ -67,23 +75,31 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-8">
-              <h1 className="text-2xl font-bold text-orange-600">HomeTaste</h1>
+              <Link href="/">
+                <h1 className="text-2xl font-bold text-orange-600 cursor-pointer">HomeTaste</h1>
+              </Link>
               <div className="hidden md:flex space-x-6">
-                <a href="#" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
+                <Link href="/" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
                   Home
-                </a>
-                <a href="#" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
+                </Link>
+                <a href="#products" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
                   Shop
                 </a>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <button className="p-2 hover:bg-orange-50 rounded-full transition-colors">
+              <button 
+                onClick={() => setIsCartOpen(true)}
+                className="p-2 hover:bg-orange-50 rounded-full transition-colors relative"
+              >
                 <ShoppingCart className="w-6 h-6 text-gray-700" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
               </button>
-              <Link href="/login" className="p-2 hover:bg-orange-50 rounded-full transition-colors block">
-                <User className="w-6 h-6 text-gray-700" />
-              </Link>
+              <UserDropdown />
             </div>
           </div>
         </div>
@@ -137,14 +153,23 @@ export default function Home() {
                         alt={product.name}
                         className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                       />
+                      {product.stock < 10 && (
+                        <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
+                          Only {product.stock} left!
+                        </div>
+                      )}
                     </div>
                     <div className="p-6">
                       <h4 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h4>
                       <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
                       <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold text-orange-600">${product.price.toFixed(2)}</span>
-                        <button className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
-                          Add to Cart
+                        <span className="text-2xl font-bold text-orange-600">₤{product.price.toFixed(2)}</span>
+                        <button 
+                          onClick={() => handleAddToCart(product)}
+                          disabled={product.stock === 0}
+                          className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        >
+                          {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
                         </button>
                       </div>
                     </div>
@@ -262,6 +287,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/*Cart Sidebare */}
+      <CartSidebar />
     </div>
   );
 }
