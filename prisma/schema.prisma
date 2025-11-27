@@ -98,3 +98,17 @@ model OrderItem {
   
   @@map("order_items")
 }
+
+model Promotion {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  discount    Int
+  startDate   DateTime
+  endDate     DateTime
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("promotions")
+}

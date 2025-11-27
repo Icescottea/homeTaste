@@ -78,20 +78,25 @@ export default function CheckoutForm() {
         const order = await orderRes.json();
 
         // Send confirmation email
-        await fetch('/api/send-order-confirmation', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            orderId: order.id,
-            userEmail: user.email,
-            userName: user.name,
-            orderNumber: order.orderNumber,
-            totalAmount: cartTotal,
-            items: cartItems,
-          }),
-        });
+        try {
+          await fetch('/api/send-order-confirmation', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId: order.id,
+              userEmail: user.email,
+              userName: user.name,
+              orderNumber: order.orderNumber,
+              totalAmount: cartTotal,
+              items: cartItems,
+            }),
+          });
+        } catch (emailError) {
+          // Email failed but order succeeded - that's okay
+          console.warn('Email sending failed:', emailError);
+        }
 
         // Clear cart
         await clearCart();
