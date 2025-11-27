@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { LayoutDashboard, Package, Tag, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Package, Tag, LogOut, Menu, X, ShoppingBag } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -54,6 +54,11 @@ export default function AdminLayout({
       href: '/admin/promotions',
       icon: Tag,
     },
+    {
+      name: 'Orders',
+      href: '/admin/orders',
+      icon: ShoppingBag,
+    }
   ];
 
   if (!user) {
