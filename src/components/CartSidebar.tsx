@@ -60,7 +60,7 @@ export default function CartSidebar() {
                   />
                   <div className="flex-1">
                     <h3 className="font-semibold text-gray-900 mb-1">{item.productName}</h3>
-                    <p className="text-orange-600 font-bold mb-2">${item.price.toFixed(2)}</p>
+                    <p className="text-orange-600 font-bold mb-2">₤{item.price.toFixed(2)}</p>
                     
                     {/* Quantity Controls */}
                     <div className="flex items-center gap-3">
@@ -95,7 +95,7 @@ export default function CartSidebar() {
                     )}
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-gray-900">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-bold text-gray-900">₤{(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 </div>
               ))}
@@ -108,7 +108,7 @@ export default function CartSidebar() {
           <div className="border-t p-6 space-y-4">
             <div className="flex justify-between items-center text-lg">
               <span className="font-semibold text-gray-700">Subtotal ({cartCount} items)</span>
-              <span className="font-bold text-2xl text-orange-600">${cartTotal.toFixed(2)}</span>
+              <span className="font-bold text-2xl text-orange-600">₤{cartTotal.toFixed(2)}</span>
             </div>
             
             <Button
