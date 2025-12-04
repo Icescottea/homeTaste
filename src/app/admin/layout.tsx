@@ -86,7 +86,9 @@ export default function AdminLayout({
         } lg:translate-x-0`}
       >
         <div className="p-6">
-          <h1 className="text-2xl font-bold text-orange-500">HomeTaste</h1>
+          <Link href="/">
+            <h1 className="text-2xl font-bold text-orange-600 cursor-pointer">HomeTaste</h1>
+          </Link>
           <p className="text-sm text-gray-400 mt-1">Admin Panel</p>
         </div>
 
