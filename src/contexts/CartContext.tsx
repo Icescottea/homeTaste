@@ -2,6 +2,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { toast } from 'sonner';
 
 interface CartItem {
   id: string;
@@ -70,8 +71,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   ) => {
     const userId = getUserId();
     if (!userId) {
-      alert('Please login or register to add items to cart');
-      window.location.href = '/login';
+      toast.error('Please login or register to add items to cart');
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 1500);
       return;
     }
 
@@ -90,9 +93,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
 
       await refreshCart();
-      alert('Added to cart successfully!');
+      toast.success('Added to cart successfully!', {
+        description: productName,
+      });
     } catch (error: any) {
-      alert(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -107,9 +112,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       }
 
       await refreshCart();
+      toast.success('Item removed from cart');
     } catch (error) {
       console.error('Error removing item:', error);
-      alert('Failed to remove item from cart');
+      toast.error('Failed to remove item from cart');
     }
   };
 
@@ -132,7 +138,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       await refreshCart();
     } catch (error) {
       console.error('Error updating quantity:', error);
-      alert('Failed to update quantity');
+      toast.error('Failed to update quantity');
     }
   };
 

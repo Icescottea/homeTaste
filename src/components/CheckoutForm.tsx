@@ -10,12 +10,18 @@ import {
 } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/contexts/CartContext';
+import { toast } from 'sonner';
 
-export default function CheckoutForm() {
+interface CheckoutFormProps {
+  finalTotal: number;
+  promoCode?: string;
+}
+
+export default function CheckoutForm({ finalTotal, promoCode }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const { cartItems, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -48,6 +54,7 @@ export default function CheckoutForm() {
 
       if (stripeError) {
         setError(stripeError.message || 'Payment failed');
+        toast.error(stripeError.message || 'Payment failed');
         setLoading(false);
         return;
       }
@@ -66,8 +73,9 @@ export default function CheckoutForm() {
               quantity: item.quantity,
               price: item.price,
             })),
-            totalAmount: cartTotal,
+            totalAmount: finalTotal,
             stripePaymentIntentId: paymentIntent.id,
+            promoCode: promoCode || null,
           }),
         });
 
@@ -89,17 +97,18 @@ export default function CheckoutForm() {
               userEmail: user.email,
               userName: user.name,
               orderNumber: order.orderNumber,
-              totalAmount: cartTotal,
+              totalAmount: finalTotal,
               items: cartItems,
             }),
           });
         } catch (emailError) {
-          // Email failed but order succeeded - that's okay
           console.warn('Email sending failed:', emailError);
         }
 
         // Clear cart
         await clearCart();
+
+        toast.success('Payment successful!');
 
         // Redirect to confirmation page
         router.push(`/order-confirmation?orderId=${order.id}`);
@@ -107,6 +116,7 @@ export default function CheckoutForm() {
     } catch (err: any) {
       console.error('Payment error:', err);
       setError(err.message || 'Payment failed. Please try again.');
+      toast.error(err.message || 'Payment failed. Please try again.');
       setLoading(false);
     }
   };
@@ -126,7 +136,7 @@ export default function CheckoutForm() {
         disabled={!stripe || loading}
         className="w-full bg-orange-600 hover:bg-orange-700 py-6 text-lg font-semibold"
       >
-        {loading ? 'Processing...' : `Pay $${cartTotal.toFixed(2)}`}
+        {loading ? 'Processing...' : `Pay $${finalTotal.toFixed(2)}`}
       </Button>
 
       <p className="text-xs text-gray-500 text-center">

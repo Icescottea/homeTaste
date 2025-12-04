@@ -7,7 +7,10 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { useCart } from '@/contexts/CartContext';
 import CheckoutForm from '@/components/CheckoutForm';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Tag, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -17,6 +20,11 @@ export default function CheckoutPage() {
   const [clientSecret, setClientSecret] = useState('');
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<any>(null);
+  const [promoLoading, setPromoLoading] = useState(false);
+  const [discount, setDiscount] = useState(0);
+  const [finalTotal, setFinalTotal] = useState(0);
 
   useEffect(() => {
     // Check if user is logged in
@@ -35,11 +43,29 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Create payment intent
-    createPaymentIntent(userData.id);
+    setLoading(false);
   }, [cartItems]);
 
-  const createPaymentIntent = async (userId: string) => {
+  useEffect(() => {
+    // Calculate final total with discount
+    if (appliedPromo) {
+      const discountAmount = (cartTotal * appliedPromo.discount) / 100;
+      setDiscount(discountAmount);
+      setFinalTotal(cartTotal - discountAmount);
+    } else {
+      setDiscount(0);
+      setFinalTotal(cartTotal);
+    }
+  }, [cartTotal, appliedPromo]);
+
+  useEffect(() => {
+    // Create payment intent when final total changes
+    if (user && finalTotal > 0) {
+      createPaymentIntent(user.id, finalTotal);
+    }
+  }, [finalTotal, user]);
+
+  const createPaymentIntent = async (userId: string, amount: number) => {
     try {
       const res = await fetch('/api/stripe/create-payment-intent', {
         method: 'POST',
@@ -47,7 +73,7 @@ export default function CheckoutPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: cartTotal,
+          amount: amount,
           userId,
         }),
       });
@@ -56,10 +82,47 @@ export default function CheckoutPage() {
       setClientSecret(data.clientSecret);
     } catch (error) {
       console.error('Error creating payment intent:', error);
-      alert('Failed to initialize payment');
-    } finally {
-      setLoading(false);
+      toast.error('Failed to initialize payment');
     }
+  };
+
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) {
+      toast.error('Please enter a promo code');
+      return;
+    }
+
+    setPromoLoading(true);
+    try {
+      const res = await fetch('/api/promotions/validate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ code: promoCode }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Invalid promo code');
+      }
+
+      setAppliedPromo(data);
+      toast.success(`Promo code applied! ${data.discount}% off`, {
+        description: data.name,
+      });
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setPromoLoading(false);
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    toast.info('Promo code removed');
   };
 
   if (loading) {
@@ -73,7 +136,7 @@ export default function CheckoutPage() {
   if (!clientSecret) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-red-600">Failed to load payment form</div>
+        <div className="text-xl">Initializing payment...</div>
       </div>
     );
   }
@@ -130,18 +193,64 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
+              {/* Promo Code Section */}
+              <div className="border-t mt-6 pt-6">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <Tag className="w-4 h-4" />
+                  Promo Code
+                </h3>
+                {!appliedPromo ? (
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Enter promo code"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                      className="flex-1"
+                      disabled={promoLoading}
+                    />
+                    <Button
+                      onClick={handleApplyPromo}
+                      disabled={promoLoading}
+                      className="bg-orange-600 hover:bg-orange-700"
+                    >
+                      {promoLoading ? 'Applying...' : 'Apply'}
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center justify-between">
+                    <div>
+                      <p className="font-semibold text-green-700">{appliedPromo.code}</p>
+                      <p className="text-sm text-green-600">{appliedPromo.discount}% discount applied</p>
+                    </div>
+                    <button
+                      onClick={handleRemovePromo}
+                      className="text-green-700 hover:text-green-900"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Price Breakdown */}
               <div className="border-t mt-6 pt-6 space-y-2">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
                   <span>${cartTotal.toFixed(2)}</span>
                 </div>
+                {appliedPromo && (
+                  <div className="flex justify-between text-green-600">
+                    <span>Discount ({appliedPromo.discount}%)</span>
+                    <span>-${discount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
                   <span>Free</span>
                 </div>
                 <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t">
                   <span>Total</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+                  <span className="text-orange-600">${finalTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -162,7 +271,7 @@ export default function CheckoutPage() {
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold mb-6">Payment Details</h2>
             <Elements options={options} stripe={stripePromise}>
-              <CheckoutForm />
+              <CheckoutForm finalTotal={finalTotal} promoCode={appliedPromo?.code} />
             </Elements>
           </div>
         </div>
