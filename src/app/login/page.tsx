@@ -213,7 +213,9 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-orange-100 flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+        <div className="loader">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
       </div>
     }>
       <LoginContent />

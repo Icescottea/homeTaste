@@ -108,7 +108,9 @@ export default function MyOrdersPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading your orders...</div>
+        <div className="loader">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
       </div>
     );
   }

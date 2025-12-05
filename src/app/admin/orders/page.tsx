@@ -125,7 +125,9 @@ export default function OrdersPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-xl">Loading orders...</div>
+        <div className="loader">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
       </div>
     );
   }

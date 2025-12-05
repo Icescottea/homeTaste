@@ -86,7 +86,9 @@ export default function InventoryPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="text-xl">Loading...</div>
+        <div className="loader">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
       </div>
     );
   }

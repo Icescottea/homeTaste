@@ -128,7 +128,9 @@ export default function CheckoutPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading checkout...</div>
+        <div className="loader">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
       </div>
     );
   }
@@ -136,7 +138,9 @@ export default function CheckoutPage() {
   if (!clientSecret) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Initializing payment...</div>
+        <div className="loader">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
       </div>
     );
   }
