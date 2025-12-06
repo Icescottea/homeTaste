@@ -73,22 +73,27 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navbar */}
-      <nav className="bg-white border-b border-orange-100 sticky top-0 z-50 shadow-sm">
+      <nav className="bg-white/85 backdrop-blur-md fixed top-0 left-0 w-full z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-28">
             <div className="flex items-center space-x-8">
               <Link href="/">
-                <h1 className="text-2xl font-bold text-orange-600 cursor-pointer">HomeTaste</h1>
+                <img
+                  src="/img/logoHs.png"
+                  alt="Colorful spices"
+                  className="w-auto h-48"
+                />
               </Link>
-              <div className="hidden md:flex space-x-6">
-                <Link href="/" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
+              <div className="hidden md:flex space-x-6 text-lg">
+                <Link href="/" className="text-gray-800 hover:text-orange-500 font-medium transition-colors">
                   Home
                 </Link>
-                <a href="#products" className="text-gray-700 hover:text-orange-600 font-medium transition-colors">
+                <a onClick={scrollToProducts} className="text-gray-800 hover:text-orange-500 font-medium transition-colors cursor-pointer">
                   Shop
                 </a>
               </div>
             </div>
+
             <div className="flex items-center space-x-4">
               <button 
                 onClick={() => setIsCartOpen(true)}
@@ -96,7 +101,7 @@ export default function Home() {
               >
                 <ShoppingCart className="w-6 h-6 text-gray-700" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-orange-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 bg-orange-400 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
@@ -108,25 +113,38 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-orange-50 to-orange-100 py-20 md:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section
+        className="relative min-h-[95vh] flex items-center bg-cover bg-no-repeat bg-left-top pt-40"
+        style={{ backgroundImage: "url('/img/spice5.jpg')" }}
+      >
+        {/* Dark overlay to make text readable */}
+        <div className="absolute inset-0 bg-black/15"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h2 className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">
+
+            {/* TEXT */}
+            <div className="space-y-6 text-white drop-shadow-lg">
+              <h2 className="text-6xl drop-shadow-[0_0_10px_rgba(0,0,0,0.9)] md:text-7xl font-bold leading-tight">
                 Authentic Spices for Your Home Kitchen
               </h2>
-              <p className="text-xl text-gray-600">
-                Experience the rich flavors of premium, hand-selected spices sourced directly from farms to your kitchen.
+
+              <p className="text-xl md:text-2xl drop-shadow-[0_0_10px_rgba(0,0,0,0.9)]">
+                Experience the rich flavors of premium, hand-selected spices sourced
+                directly from farms to your kitchen.
               </p>
-              <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors shadow-lg hover:shadow-xl">
+
+              <button id="cta" className="text-white font-semibold text-xl" onClick={scrollToProducts}>
                 Shop Now
               </button>
             </div>
-            <div className="relative h-96 md:h-[500px]">
+
+            {/* IMAGE on right */}
+            <div className="relative h-96 md:h-[32rem]">
               <img
-                src="/img/logoHs.png"
+                src="/img/spice4.jpg"
                 alt="Colorful spices"
-                className="w-full h-full object-cover rounded-2xl shadow-2xl"
+                className="w-full h-full object-cover rounded-2xl shadow-1xl"
               />
             </div>
           </div>
@@ -325,4 +343,11 @@ export default function Home() {
       <CartSidebar />
     </div>
   );
+}
+
+const scrollToProducts = () => {
+  var productsSection = document.getElementById("products");
+  productsSection?.scrollIntoView({
+    behavior: "smooth"
+  });
 }

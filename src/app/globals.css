@@ -102,6 +102,54 @@
   animation-delay: 600ms;
 }
 
+#cta {
+  text-decoration: none;
+  position: relative;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  width: 9em;
+  height: 3em;
+  background: linear-gradient(90deg, #FE676E, #FD8F52, #FF8D71, #FFDCA2);
+  z-index: 1;
+}
+
+#cta:hover {
+  animation: ani 8s linear infinite;
+  border: none;
+}
+
+@keyframes ani {
+  0% {
+    background-position: 0%;
+  }
+
+  100% {
+    background-position: 400%;
+  }
+}
+
+#cta:before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  z-index: -1;
+  background: linear-gradient(90deg, #FE676E, #FD8F52, #FF8D71, #FFDCA2);
+  background-size: 400%;
+  transition: 1s;
+}
+
+#cta:hover::before {
+  filter: blur(20px);
+}
+
+#cta:active {
+  background: linear-gradient(32deg, #FE676E, #FD8F52, #FF8D71, #FFDCA2);
+}
+
 @keyframes keyframes-blink {
   0% {
     opacity: 0.3;

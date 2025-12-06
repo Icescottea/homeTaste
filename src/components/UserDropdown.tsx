@@ -53,7 +53,7 @@ export default function UserDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 hover:bg-orange-50 rounded-lg transition-colors"
       >
-        <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center">
+        <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
           <span className="text-white font-semibold text-sm">
             {user.name.charAt(0).toUpperCase()}
           </span>
