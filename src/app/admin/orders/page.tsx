@@ -258,7 +258,7 @@ export default function OrdersPage() {
                     </td>
                     <td className="py-4 px-4 text-gray-600">{order.items.length} items</td>
                     <td className="py-4 px-4">
-                      <p className="font-bold text-orange-600">${order.totalAmount.toFixed(2)}</p>
+                      <p className="font-bold text-orange-600">₤{order.totalAmount.toFixed(2)}</p>
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">

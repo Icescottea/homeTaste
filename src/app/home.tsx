@@ -134,7 +134,7 @@ export default function Home() {
       </section>
 
       {/* Products Carousel */}
-      <section className="py-20 bg-white">
+      <section id="products" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h3 className="text-4xl font-bold text-gray-900 mb-4">Featured Products</h3>
@@ -144,57 +144,88 @@ export default function Home() {
           {products.length > 0 ? (
             <div className="relative">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {getVisibleProducts().map((product) => (
-                  <div
-                    key={product.id}
-                    className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-300"
-                  >
-                    <div className="relative h-64 overflow-hidden">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-                      />
-                      {product.stock < 10 && (
-                        <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
-                          Only {product.stock} left!
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-6">
-                      <h4 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h4>
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-2xl font-bold text-orange-600">₤{product.price.toFixed(2)}</span>
-                        <button 
-                          onClick={() => handleAddToCart(product)}
-                          disabled={product.stock === 0}
-                          className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                        >
-                          {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-                        </button>
+                {getVisibleProducts().map((product, index) => (
+                <div
+                  key={product.id}
+                  className="
+                    bg-red-50 border border-gray-200 rounded-xl overflow-hidden 
+                    hover:shadow-xl transition-all duration-500 transform hover:-translate-y-1
+                    opacity-100
+                  "
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                    />
+                    {product.stock < 10 && product.stock > 0 && (
+                      <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-xs font-bold animate-pulse">
+                        Only {product.stock} left!
                       </div>
+                    )}
+                  </div>
+                  
+                  <div className="p-6">
+                    <h4 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h4>
+                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">{product.description}</p>
+                  
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-orange-600">
+                        ${product.price.toFixed(2)}
+                      </span>
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        disabled={product.stock === 0}
+                        className="
+                          bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg 
+                          font-medium transition-all duration-500 
+                          disabled:bg-gray-400 disabled:cursor-not-allowed 
+                          transform hover:scale-105 active:scale-95
+                        "
+                      >
+                        {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                      </button>
                     </div>
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
 
+              </div>
+            
               {/* Carousel Controls */}
               {products.length > 3 && (
                 <>
                   <button
                     onClick={prevSlide}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white hover:bg-orange-50 p-3 rounded-full shadow-lg transition-colors"
+                    className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white hover:bg-orange-50 p-3 rounded-full shadow-lg transition-all duration-500 hover:shadow-xl hover:scale-110 active:scale-95 z-10"
                   >
                     <ChevronLeft className="w-6 h-6 text-orange-600" />
                   </button>
                   <button
                     onClick={nextSlide}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white hover:bg-orange-50 p-3 rounded-full shadow-lg transition-colors"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white hover:bg-orange-50 p-3 rounded-full shadow-lg transition-all duration-500 hover:shadow-xl hover:scale-110 active:scale-95 z-10"
                   >
                     <ChevronRight className="w-6 h-6 text-orange-600" />
                   </button>
                 </>
+              )}
+
+              {/* Dot Indicators */}
+              {products.length > 3 && (
+                <div className="flex justify-center gap-2 mt-8">
+                  {products.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentSlide(index)}
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        index === currentSlide
+                          ? 'w-8 bg-orange-600'
+                          : 'w-2 bg-gray-300 hover:bg-gray-400'
+                      }`}
+                    />
+                  ))}
+                </div>
               )}
             </div>
           ) : (

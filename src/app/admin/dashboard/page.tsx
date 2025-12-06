@@ -108,7 +108,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-gray-900">
-              ${stats.totalRevenue.toFixed(2)}
+              ₤{stats.totalRevenue.toFixed(2)}
             </div>
             <p className="text-sm text-gray-600 mt-2">All time revenue</p>
           </CardContent>
@@ -135,7 +135,7 @@ export default function DashboardPage() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">${order.totalAmount.toFixed(2)}</p>
+                      <p className="font-medium">₤{order.totalAmount.toFixed(2)}</p>
                       <span
                         className={`text-xs px-2 py-1 rounded ${
                           order.status === 'COMPLETED'
