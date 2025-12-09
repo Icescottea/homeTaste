@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Home Taste",
+  icons: {
+    icon: '/home.jpg'
+  }
 };
 
 export default function RootLayout({
